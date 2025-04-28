@@ -1,75 +1,49 @@
 package atm.std.chatbackend.config;
 
-   import atm.std.chatbackend.model.Message;
-   import atm.std.chatbackend.service.MessageService;
-   import com.fasterxml.jackson.databind.ObjectMapper;
-   import org.springframework.stereotype.Component;
-   import org.springframework.web.socket.CloseStatus;
-   import org.springframework.web.socket.TextMessage;
-   import org.springframework.web.socket.WebSocketSession;
-   import org.springframework.web.socket.handler.TextWebSocketHandler;
+import atm.std.chatbackend.model.Message;
+import atm.std.chatbackend.repository.MessageRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.web.socket.CloseStatus;
+import org.springframework.web.socket.TextMessage;
+import org.springframework.web.socket.WebSocketSession;
+import org.springframework.web.socket.handler.TextWebSocketHandler;
 
-   import java.io.IOException;
-   import java.text.SimpleDateFormat;
-   import java.util.Date;
-   import java.util.Map;
-   import java.util.concurrent.ConcurrentHashMap;
+import java.util.Date;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
-   @Component
-   public class ChatWebSocketHandler extends TextWebSocketHandler {
-       private final MessageService messageService;
-       private final ObjectMapper objectMapper = new ObjectMapper();
-       private final Map<String, WebSocketSession> sessions = new ConcurrentHashMap<>();
-       private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+@Component
+public class ChatWebSocketHandler extends TextWebSocketHandler {
 
-       public ChatWebSocketHandler(MessageService messageService) {
-           this.messageService = messageService;
-           this.dateFormat.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
-       }
+    private final Set<WebSocketSession> sessions = ConcurrentHashMap.newKeySet();
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
-       @Override
-       public void afterConnectionEstablished(WebSocketSession session) throws Exception {
-           sessions.put(session.getId(), session);
-       }
+    @Autowired
+    private MessageRepository messageRepository;
 
-       @SuppressWarnings("unchecked")
     @Override
-       public void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
-           Map<String, String> payload = objectMapper.readValue(message.getPayload(), Map.class);
-           String type = payload.get("type");
+    public void afterConnectionEstablished(WebSocketSession session) throws Exception {
+        sessions.add(session);
+    }
 
-           if ("join".equals(type)) {
-               String username = payload.get("username");
-               session.getAttributes().put("username", username);
-           } else {
-               String username = (String) session.getAttributes().get("username");
-               String msg = payload.get("message");
-               String timestampStr = payload.get("timestamp");
+    @Override
+    protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
+        String payload = message.getPayload();
+        Message chatMessage = objectMapper.readValue(payload, Message.class);
+        chatMessage.setTimestamp(new Date());
+        messageRepository.save(chatMessage);
 
-               if (username != null && msg != null && timestampStr != null && isAscii(msg)) {
-                   Date timestamp = dateFormat.parse(timestampStr);
-                   Message chatMessage = new Message(username, msg, timestamp);
-                   messageService.saveMessage(chatMessage);
-                   broadcastMessage(chatMessage);
-               }
-           }
-       }
+        for (WebSocketSession s : sessions) {
+            if (s.isOpen()) {
+                s.sendMessage(new TextMessage(objectMapper.writeValueAsString(chatMessage)));
+            }
+        }
+    }
 
-       @Override
-       public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
-           sessions.remove(session.getId());
-       }
-
-       private void broadcastMessage(Message message) throws IOException {
-           String jsonMessage = objectMapper.writeValueAsString(message);
-           for (WebSocketSession session : sessions.values()) {
-               if (session.isOpen()) {
-                   session.sendMessage(new TextMessage(jsonMessage));
-               }
-           }
-       }
-
-       private boolean isAscii(String str) {
-           return str != null && str.matches("^[\\x00-\\x7F]*$");
-       }
-   }
+    @Override
+    public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
+        sessions.remove(session);
+    }
+}

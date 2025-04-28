@@ -1,26 +1,28 @@
 package atm.std.chatbackend.controller;
 
-   import atm.std.chatbackend.model.Message;
-   import atm.std.chatbackend.service.MessageService;
-   import org.springframework.web.bind.annotation.CrossOrigin;
-   import org.springframework.web.bind.annotation.GetMapping;
-   import org.springframework.web.bind.annotation.RequestMapping;
-   import org.springframework.web.bind.annotation.RestController;
+import atm.std.chatbackend.model.Message;
+import atm.std.chatbackend.repository.MessageRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
 
-   import java.util.List;
+import java.util.Date;
+import java.util.List;
 
-   @RestController
-   @RequestMapping("/api/messages")
-   @CrossOrigin(origins = "http://chat-frontend-service:90")
-   public class MessageController {
-       private final MessageService messageService;
+@RestController
+@RequestMapping("/api/messages")
+public class MessageController {
 
-       public MessageController(MessageService messageService) {
-           this.messageService = messageService;
-       }
+    @Autowired
+    private MessageRepository messageRepository;
 
-       @GetMapping
-       public List<Message> getMessages() {
-           return messageService.getAllMessages();
-       }
-   }
+    @GetMapping
+    public List<Message> getAllMessages() {
+        return messageRepository.findAll();
+    }
+
+    @PostMapping
+    public Message createMessage(@RequestBody Message message) {
+        message.setTimestamp(new Date());
+        return messageRepository.save(message);
+    }
+}
