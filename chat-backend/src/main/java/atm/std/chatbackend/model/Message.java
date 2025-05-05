@@ -14,4 +14,12 @@ public class Message {
     private String sender;
     private String content;
     private Date timestamp;
+    private MessageType type = MessageType.CHAT; // Implicit este un mesaj normal
+    
+    public enum MessageType {
+        CHAT,       // Mesaj normal
+        JOIN,       // Mesaj de conectare utilizator
+        LEAVE,      // Mesaj de deconectare utilizator
+        SYSTEM      // Mesaj de sistem
+    }
 }
