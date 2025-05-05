@@ -1,0 +1,1099 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delicii Italiene - Rețete de Pizza</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #d73b3e;
+            --primary-dark: #b72e31;
+            --secondary-color: #2d3436;
+            --accent-color: #f1c40f;
+            --light-bg: #f9f5f0;
+            --card-bg: #ffffff;
+            --text-dark: #333333;
+            --text-light: #777777;
+            --shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--light-bg);
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        header {
+            background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1513104890138-7c749659a591?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            padding: 100px 0;
+            text-align: center;
+            position: relative;
+        }
+        
+        .header-content {
+            position: relative;
+            z-index: 2;
+        }
+        
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 3.5rem;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        
+        .header-subtitle {
+            font-size: 1.2rem;
+            font-weight: 300;
+            max-width: 600px;
+            margin: 0 auto 30px;
+        }
+        
+        .browse-recipes-btn {
+            display: inline-block;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 12px 28px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: var(--transition);
+            box-shadow: 0 4px 15px rgba(215, 59, 62, 0.3);
+        }
+        
+        .browse-recipes-btn:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-3px);
+            box-shadow: 0 7px 15px rgba(215, 59, 62, 0.4);
+        }
+        
+        .category-tabs {
+            display: flex;
+            justify-content: center;
+            margin: 50px 0 30px;
+            flex-wrap: wrap;
+        }
+        
+        .category-tab {
+            padding: 12px 25px;
+            margin: 5px;
+            background-color: var(--card-bg);
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: var(--transition);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+        }
+        
+        .category-tab.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .category-tab:hover:not(.active) {
+            background-color: rgba(215, 59, 62, 0.1);
+        }
+        
+        .recipes-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 30px;
+            margin: 0 auto;
+            padding: 20px 0 50px;
+        }
+        
+        .recipe-card {
+            background-color: var(--card-bg);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            position: relative;
+        }
+        
+        .recipe-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+        }
+        
+        .recipe-header {
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .recipe-image {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.5s ease;
+        }
+        
+        .recipe-card:hover .recipe-image {
+            transform: scale(1.05);
+        }
+        
+        .recipe-difficulty {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background-color: var(--accent-color);
+            color: var(--secondary-color);
+            padding: 5px 12px;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            z-index: 1;
+        }
+        
+        .recipe-title-area {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+            padding: 25px 20px 20px;
+            transition: var(--transition);
+        }
+        
+        .recipe-title {
+            color: white;
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+        
+        .recipe-subtitle {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+        
+        .recipe-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.6s cubic-bezier(0, 1, 0, 1);
+        }
+        
+        .recipe-card.expanded .recipe-content {
+            max-height: 2000px;
+            transition: max-height 1s ease-in-out;
+        }
+        
+        .recipe-details {
+            padding: 25px;
+        }
+        
+        .recipe-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(0,0,0,0.08);
+        }
+        
+        .info-item {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .info-icon {
+            color: var(--primary-color);
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+        }
+        
+        .info-label {
+            font-size: 0.75rem;
+            color: var(--text-light);
+            margin-bottom: 3px;
+        }
+        
+        .info-value {
+            font-weight: 600;
+            font-size: 1rem;
+            color: var(--text-dark);
+        }
+        
+        h3 {
+            font-family: 'Playfair Display', serif;
+            color: var(--primary-color);
+            margin-top: 25px;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+        
+        .ingredients-list, .instructions-list {
+            padding-left: 0;
+            list-style-position: inside;
+        }
+        
+        .ingredients-list li {
+            margin-bottom: 10px;
+            position: relative;
+            padding-left: 25px;
+            list-style-type: none;
+        }
+        
+        .ingredients-list li:before {
+            content: "•";
+            color: var(--primary-color);
+            font-size: 1.5rem;
+            position: absolute;
+            left: 0;
+            top: -5px;
+        }
+        
+        .instructions-list li {
+            margin-bottom: 15px;
+            counter-increment: step-counter;
+            position: relative;
+            padding-left: 35px;
+            list-style-type: none;
+        }
+        
+        .instructions-list li:before {
+            content: counter(step-counter);
+            background-color: var(--primary-color);
+            color: white;
+            font-size: 0.8rem;
+            font-weight: 600;
+            border-radius: 50%;
+            padding: 3px 8px;
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+        
+        .recipe-footer {
+            padding: 15px 25px;
+            border-top: 1px solid rgba(0,0,0,0.08);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .toggle-recipe-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .toggle-recipe-btn:hover {
+            background-color: var(--primary-dark);
+        }
+        
+        .social-share {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .share-btn {
+            background-color: transparent;
+            border: none;
+            color: var(--text-light);
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 1.1rem;
+        }
+        
+        .share-btn:hover {
+            color: var(--primary-color);
+        }
+        
+        footer {
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 60px 0 30px;
+            margin-top: 50px;
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .footer-logo {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+        }
+        
+        .footer-about p {
+            color: rgba(255,255,255,0.7);
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+        }
+        
+        .footer-title {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .footer-title:after {
+            content: '';
+            position: absolute;
+            width: 50%;
+            height: 2px;
+            background-color: var(--primary-color);
+            bottom: -8px;
+            left: 0;
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-links li {
+            margin-bottom: 10px;
+        }
+        
+        .footer-links a {
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            transition: var(--transition);
+            font-size: 0.9rem;
+        }
+        
+        .footer-links a:hover {
+            color: var(--primary-color);
+            padding-left: 5px;
+        }
+        
+        .social-media {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .social-media a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            background-color: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            color: white;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+        
+        .social-media a:hover {
+            background-color: var(--primary-color);
+            transform: translateY(-3px);
+        }
+        
+        .copyright {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            color: rgba(255,255,255,0.5);
+            font-size: 0.85rem;
+        }
+        
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+            
+            .header-subtitle {
+                font-size: 1rem;
+            }
+            
+            .recipe-card {
+                margin-bottom: 20px;
+            }
+            
+            .recipe-info {
+                flex-wrap: wrap;
+                gap: 15px;
+            }
+            
+            .footer-content {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* Animații */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .recipe-card {
+            animation: fadeIn 0.6s ease forwards;
+            opacity: 0;
+        }
+        
+        .recipe-card:nth-child(1) { animation-delay: 0.1s; }
+        .recipe-card:nth-child(2) { animation-delay: 0.2s; }
+        .recipe-card:nth-child(3) { animation-delay: 0.3s; }
+        .recipe-card:nth-child(4) { animation-delay: 0.4s; }
+        .recipe-card:nth-child(5) { animation-delay: 0.5s; }
+        .recipe-card:nth-child(6) { animation-delay: 0.6s; }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <h1>Delicii Italiene</h1>
+            <p class="header-subtitle">Descoperă rețete autentice de pizza pregătite ca în inima Italiei, direct din bucătăria ta</p>
+            <a href="#recipes" class="browse-recipes-btn">Vezi rețetele <i class="fas fa-arrow-down"></i></a>
+        </div>
+    </header>
+    
+    <div class="container">
+        <div class="category-tabs">
+            <div class="category-tab active">Toate rețetele</div>
+            <div class="category-tab">Clasice</div>
+            <div class="category-tab">Cu brânzeturi</div>
+            <div class="category-tab">Picante</div>
+            <div class="category-tab">Vegetariene</div>
+            <div class="category-tab">Cu carne</div>
+            <div class="category-tab">Cu fructe de mare</div>
+        </div>
+        
+        <div id="recipes" class="recipes-container">
+            <!-- Pizza Margherita -->
+            <div class="recipe-card">
+                <div class="recipe-header">
+                    <span class="recipe-difficulty">Ușor</span>
+                    <img src="https://images.unsplash.com/photo-1574071318508-1cdbab80d002?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80" alt="Pizza Margherita" class="recipe-image">
+                    <div class="recipe-title-area">
+                        <h2 class="recipe-title">Pizza Margherita</h2>
+                        <p class="recipe-subtitle">Clasică italiană, simplă și delicioasă</p>
+                    </div>
+                </div>
+                <div class="recipe-content">
+                    <div class="recipe-details">
+                        <div class="recipe-info">
+                            <div class="info-item">
+                                <i class="fas fa-clock info-icon"></i>
+                                <div class="info-label">Preparare</div>
+                                <div class="info-value">30 min</div>
+                            </div>
+                            <div class="info-item">
+                                <i class="fas fa-fire info-icon"></i>
+                                <div class="info-label">Coacere</div>
+                                <div class="info-value">15 min</div>
+                            </div>
+                            <div class="info-item">
+                                <i class="fas fa-users info-icon"></i>
+                                <div class="info-label">Porții</div>
+                                <div class="info-value">4</div>
+                            </div>
+                            <div class="info-item">
+                                <i class="fas fa-chart-pie info-icon"></i>
+                                <div class="info-label">Calorii</div>
+                                <div class="info-value">285 kcal</div>
+                            </div>
+                        </div>
+                        
+                        <h3>Ingrediente</h3>
+                        <ul class="ingredients-list">
+                            <li>350g făină de pizza (tip 00)</li>
+                            <li>200ml apă călduță</li>
+                            <li>7g drojdie uscată</li>
+                            <li>1 linguriță de zahăr</li>
+                            <li>2 linguri ulei de măsline</li>
+                            <li>1 linguriță sare</li>
+                            <li>250g sos de roșii proaspăt</li>
+                            <li>200g mozzarella proaspătă</li>
+                            <li>Câteva frunze de busuioc</li>
+                            <li>Ulei de măsline extra virgin pentru stropit</li>
+                        </ul>
+                        
+                        <h3>Mod de preparare</h3>
+                        <ol class="instructions-list">
+                            <li>Amestecă drojdia și zahărul în apa călduță și lasă 5-10 minute să se activeze.</li>
+                            <li>Într-un castron mare, pune făina și sarea. Fă o adâncitură în mijloc și adaugă amestecul de drojdie și uleiul de măsline.</li>
+                            <li>Amestecă până când obții un aluat omogen, apoi frământă pe o suprafață înfăinată aproximativ 10 minute până devine elastic.</li>
+                            <li>Pune aluatul într-un castron uns cu ulei, acoperă și lasă la crescut într-un loc cald timp de 1-2 ore, până își dublează volumul.</li>
+                            <li>Preîncălzește cuptorul la 250°C cu o tavă sau piatră de pizza înăuntru.</li>
+                            <li>Împarte aluatul în două, întinde fiecare bucată într-un cerc subțire.</li>
+                            <li>Întinde sosul de roșii, lasă un pic de margine.</li>
+                            <li>Rupe mozzarella în bucăți și distribuie-o pe pizza.</li>
+                            <li>Coace 12-15 minute până când marginile sunt aurii și brânza este topită.</li>
+                            <li>După coacere, adaugă frunzele de busuioc și stropește cu ulei de măsline.</li>
+                        </ol>
+                    </div>
+                    <div class="recipe-footer">
+                        <button class="toggle-recipe-btn"><span class="btn-text">Ascunde rețeta</span> <i class="fas fa-chevron-up btn-icon"></i></button>
+                        <div class="social-share">
+                            <button class="share-btn"><i class="fab fa-facebook-f"></i></button>
+                            <button class="share-btn"><i class="fab fa-pinterest"></i></button>
+                            <button class="share-btn"><i class="fab fa-whatsapp"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Pizza Quattro Formaggi -->
+            <div class="recipe-card">
+                <div class="recipe-header">
+                    <span class="recipe-difficulty">Mediu</span>
+                    <img src="https://images.unsplash.com/photo-1625299365646-b2633728dbed?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80" alt="Pizza Quattro Formaggi" class="recipe-image">
+                    <div class="recipe-title-area">
+                        <h2 class="recipe-title">Pizza Quattro Formaggi</h2>
+                        <p class="recipe-subtitle">Combinație rafinată de patru brânzeturi</p>
+                    </div>
+                </div>
+                <div class="recipe-content">
+                    <div class="recipe-details">
+                        <div class="recipe-info">
+                            <div class="info-item">
+                                <i class="fas fa-clock info-icon"></i>
+                                <div class="info-label">Preparare</div>
+                                <div class="info-value">30 min</div>
+                            </div>
+                            <div class="info-item">
+                                <i class="fas fa-fire info-icon"></i>
+                                <div class="info-label">Coacere</div>
+                                <div class="info-value">12 min</div>
+                            </div>
+                            <div class="info-item">
+                                <i class="fas fa-users info-icon"></i>
+                                <div class="info-label">Porții</div>
+                                <div class="info-value">4</div>
+                            </div>
+                            <div class="info-item">
+                                <i class="fas fa-chart-pie info-icon"></i>
+                                <div class="info-label">Calorii</div>
+                                <div class="info-value">320 kcal</div>
+                            </div>
+                        </div>
+                        
+                        <h3>Ingrediente</h3>
+                        <ul class="ingredients-list">
+                            <li>1 bază de pizza (aceeași ca la Margherita)</li>
+                            <li>3 linguri smântână dulce pentru gătit</li>
+                            <li>100g mozzarella rasă</li>
+                            <li>50g gorgonzola</li>
+                            <li>50g parmezan ras</li>
+                            <li>50g fontina sau emmental</li>
+                            <li>Oregano uscat</li>
+                            <li>Piper negru proaspăt măcinat</li>
+                            <li>Ulei de măsline</li>
+                        </ul>
+                        
+                        <h3>Mod de preparare</h3>
+                        <ol class="instructions-list">
+                            <li>Prepară aluatul ca pentru pizza Margherita.</li>
+                            <li>Preîncălzește cuptorul la 250°C.</li>
+                            <li>Întinde aluatul într-un cerc pe o tavă unsă cu ulei.</li>
+                            <li>În loc de sos de roșii, întinde un strat subțire de smântână dulce.</li>
+                            <li>Presară mozzarella rasă peste întreaga suprafață.</li>
+                            <li>Împarte celelalte brânzeturi în bucăți mici și distribuie-le uniform.</li>
+                            <li>Presară oregano și piper după gust.</li>
+                            <li>Stropește cu puțin ulei de măsline.</li>
+                            <li>Coace 10-12 minute până când brânzeturile sunt topite și marginile sunt aurii.</li>
+                        </ol>
+                    </div>
+                    <div class="recipe-footer">
+                        <button class="toggle-recipe-btn"><span class="btn-text">Ascunde rețeta</span> <i class="fas fa-chevron-up btn-icon"></i></button>
+                        <div class="social-share">
+                            <button class="share-btn"><i class="fab fa-facebook-f"></i></button>
+                            <button class="share-btn"><i class="fab fa-pinterest"></i></button>
+                            <button class="share-btn"><i class="fab fa-whatsapp"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Pizza Diavola -->
+            <div class="recipe-card">
+                <div class="recipe-header">
+                    <span class="recipe-difficulty">Mediu</span>
+                    <img src="https://images.unsplash.com/photo-1628840042765-356cda07504e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80" alt="Pizza Diavola" class="recipe-image">
+                    <div class="recipe-title-area">
+                        <h2 class="recipe-title">Pizza Diavola</h2>
+                        <p class="recipe-subtitle">Pentru iubitorii de gusturi picante</p>
+                    </div>
+                </div>
+                <div class="recipe-content">
+                    <div class="recipe-details">
+                        <div class="recipe-info">
+                            <div class="info-item">
+                                <i class="fas fa-clock info-icon"></i>
+                                <div class="info-label">Preparare</div>
+                                <div class="info-value">30 min</div>
+                            </div>
+                            <div class="info-item">
+                                <i class="fas fa-fire info-icon"></i>
+                                <div class="info-label">Coacere</div>
+                                <div class="info-value">15 min</div>
+                            </div>
+                            <div class="info-item">
+                                <i class="fas fa-users info-icon"></i>
+                                <div class="info-label">Porții</div>
+                                <div class="info-value">4</div>
+                            </div>
+                            <div class="info-item">
+                                <i class="fas fa-chart-pie info-icon"></i>
+                                <div class="info-label">Calorii</div>
+                                <div class="info-value">310 kcal</div>
+                            </div>
+                        </div>
+                        
+                        <h3>Ingrediente</h3>
+                        <ul class="ingredients-list">
+                            <li>1 bază de pizza</li>
+                            <li>200g sos de roșii</li>
+                            <li>200g mozzarella rasă</li>
+                            <li>100g salam picant (tip Napoli sau pepperoni)</li>
+                            <li>1 ardei iute roșu, feliat subțire</li>
+                            <li>1 linguriță fulgi de chili</li>
+                            <li>Oregano uscat</li>
+                            <li>Ulei de măsline picant (opțional)</li>
+                        </ul>
+                        
+                        <h3>Mod de preparare</h3>
+                        <ol class="instructions-list">
+                            <li>Prepară aluatul pentru pizza.</li>
+                            <li>Preîncălzește cuptorul la 250°C.</li>
+                            <li>Întinde aluatul pe o tavă unsă cu ulei.</li>
+                            <li>Întinde sosul de roșii, lasă marginea liberă.</li>
+                            <li>Presară mozzarella rasă.</li>
+                            <li>Aranjează feliile de salam picant și ardeiul iute.</li>
+                            <li>Adaugă fulgii de chili după gust.</li>
+                            <li>Presară oregano.</li>
+                            <li>Coace 12-15 minute până când marginile sunt aurii și brânza este topită.</li>
+                            <li>Opțional, după coacere, poți stropi cu ulei de măsline picant.</li>
+                        </ol>
+                    </div>
+                    <div class="recipe-footer">
+                        <button class="toggle-recipe-btn"><span class="btn-text">Ascunde rețeta</span> <i class="fas fa-chevron-up btn-icon"></i></button>
+                        <div class="social-share">
+                            <button class="share-btn"><i class="fab fa-facebook-f"></i></button>
+                            <button class="share-btn"><i class="fab fa-pinterest"></i></button>
+                            <button class="share-btn"><i class="fab fa-whatsapp"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Pizza Vegetariană -->
+            <div class="recipe-card">
+                <div class="recipe-header">
+                    <span class="recipe-difficulty">Ușor</span>
+                    <img src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80" alt="Pizza Vegetariană" class="recipe-image">
+                    <div class="recipe-title-area">
+                        <h2 class="recipe-title">Pizza Vegetariană</h2>
+                        <p class="recipe-subtitle">Plină de legume proaspete și sănătoase</p>
+                    </div>
+                </div>
+                <div class="recipe-content">
+                    <div class="recipe-details">
+                        <div class="recipe-info">
+                            <div class="info-item">
+                                <i class="fas fa-clock info-icon"></i>
+                                <div class="info-label">Preparare</div>
+                                <div class="info-value">40 min</div>
+                            </div>
+                            <div class="info-item">
+                                <i class="fas fa-fire info-icon"></i>
+                                <div class="info-label">Coacere</div>
+                                <div class="info-value">15 min</div>
+                            </div>
+                            <div class="info-item">
+                                <i class="fas fa-users info-icon"></i>
+                                <div class="info-label">Porții</div>
+                                <div class="info-value">4</div>
+                            </div>
+                            <div class="info-item">
+                                <i class="fas fa-chart-pie info-icon"></i>
+                                <div class="info-label">Calorii</div>
+                                <div class="info-value">280 kcal</div>
+                            </div>
+                        </div>
+                        
+                        <h3>Ingrediente</h3>
+                        <ul class="ingredients-list">
+                            <li>1 bază de pizza</li>
+                            <li>200g sos de roșii</li>
+                            <li>150g mozzarella rasă</li>
+                            <li>1 ardei gras colorat, tăiat cubulețe</li>
+                            <li>1 ceapă roșie, tăiată felii subțiri</li>
+                            <li>100g ciuperci champignon, feliate</li>
+                            <li>50g baby spanac</li>
+                            <li>8-10 măsline negre, fără sâmburi</li>
+                            <li>50g brânză feta sau tofu, sfărâmată</li>
+                            <li>Oregano și busuioc uscat</li>
+                            <li>Ulei de măsline</li>
+                        </ul>
+                        
+                        <h3>Mod de preparare</h3>
+                        <ol class="instructions-list">
+                            <li>Prepară aluatul pentru pizza.</li>
+                            <li>Preîncălzește cuptorul la 250°C.</li>
+                            <li>Sotează ușor ardeiul, ceapa și ciupercile în puțin ulei de măsline, 3-4 minute.</li>
+                            <li>Întinde aluatul pe o tavă unsă cu ulei.</li>
+                            <li>Întinde sosul de roșii, lasă marginea liberă.</li>
+                            <li>Presară mozzarella rasă.</li>
+                            <li>Aranjează legumele sotate, spanacul și măslinele.</li>
+                            <li>Presară brânza feta sau tofu sfărâmată.</li>
+                            <li>Adaugă oregano și busuioc uscat.</li>
+                            <li>Stropește cu puțin ulei de măsline.</li>
+                            <li>Coace 15 minute până când marginile sunt aurii și brânza este topită.</li>
+                        </ol>
+                    </div>
+                    <div class="recipe-footer">
+                        <button class="toggle-recipe-btn"><span class="btn-text">Ascunde rețeta</span> <i class="fas fa-chevron-up btn-icon"></i></button>
+                        <div class="social-share">
+                            <button class="share-btn"><i class="fab fa-facebook-f"></i></button>
+                            <button class="share-btn"><i class="fab fa-pinterest"></i></button>
+                            <button class="share-btn"><i class="fab fa-whatsapp"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Pizza Frutti di Mare -->
+            <div class="recipe-card">
+                <div class="recipe-header">
+                    <span class="recipe-difficulty">Avansat</span>
+                    <img src="https://images.unsplash.com/photo-1595708684082-a173bb3a06c5?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80" alt="Pizza Frutti di Mare" class="recipe-image">
+                    <div class="recipe-title-area">
+                        <h2 class="recipe-title">Pizza Frutti di Mare</h2>
+                        <p class="recipe-subtitle">O explozie de arome din adâncuri</p>
+                    </div>
+                </div>
+                <div class="recipe-content">
+                    <div class="recipe-details">
+                        <div class="recipe-info">
+                            <div class="info-item">
+                                <i class="fas fa-clock info-icon"></i>
+                                <div class="info-label">Preparare</div>
+                                <div class="info-value">40 min</div>
+                            </div>
+                            <div class="info-item">
+                                <i class="fas fa-fire info-icon"></i>
+                                <div class="info-label">Coacere</div>
+                                <div class="info-value">12 min</div>
+                            </div>
+                            <div class="info-item">
+                                <i class="fas fa-users info-icon"></i>
+                                <div class="info-label">Porții</div>
+                                <div class="info-value">4</div>
+                            </div>
+                            <div class="info-item">
+                                <i class="fas fa-chart-pie info-icon"></i>
+                                <div class="info-label">Calorii</div>
+                                <div class="info-value">295 kcal</div>
+                            </div>
+                        </div>
+                        
+                        <h3>Ingrediente</h3>
+                        <ul class="ingredients-list">
+                            <li>1 bază de pizza</li>
+                            <li>200g sos de roșii</li>
+                            <li>150g mozzarella rasă</li>
+                            <li>200g mix de fructe de mare (creveți, calamari, midii)</li>
+                            <li>2 căței de usturoi, tocați mărunt</li>
+                            <li>1 linguriță coajă de lămâie rasă</li>
+                            <li>2 linguri pătrunjel proaspăt, tocat</li>
+                            <li>Piper negru proaspăt măcinat</li>
+                            <li>Ulei de măsline</li>
+                            <li>Opțional: ardei iute tocat</li>
+                        </ul>
+                        
+                        <h3>Mod de preparare</h3>
+                        <ol class="instructions-list">
+                            <li>Prepară aluatul pentru pizza.</li>
+                            <li>Preîncălzește cuptorul la 250°C.</li>
+                            <li>Sotează ușor usturoiul în ulei de măsline, adaugă fructele de mare și gătește 2-3 minute.</li>
+                            <li>Adaugă coaja de lămâie rasă și jumătate din pătrunjel.</li>
+                            <li>Întinde aluatul pe o tavă unsă cu ulei.</li>
+                            <li>Întinde sosul de roșii, lasă marginea liberă.</li>
+                            <li>Presară mozzarella rasă, dar mai puțin decât la alte pizze.</li>
+                            <li>Distribuie uniform fructele de mare.</li>
+                            <li>Adaugă piper și, opțional, ardei iute tocat.</li>
+                            <li>Coace 10-12 minute până când marginile sunt aurii.</li>
+                            <li>După coacere, presară restul pătrunjelului proaspăt și stropește cu ulei de măsline.</li>
+                        </ol>
+                    </div>
+                    <div class="recipe-footer">
+                        <button class="toggle-recipe-btn"><span class="btn-text">Ascunde rețeta</span> <i class="fas fa-chevron-up btn-icon"></i></button>
+                        <div class="social-share">
+                            <button class="share-btn"><i class="fab fa-facebook-f"></i></button>
+                            <button class="share-btn"><i class="fab fa-pinterest"></i></button>
+                            <button class="share-btn"><i class="fab fa-whatsapp"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Pizza Carbonara -->
+            <div class="recipe-card">
+                <div class="recipe-header">
+                    <span class="recipe-difficulty">Mediu</span>
+                    <img src="https://images.unsplash.com/photo-1593560708920-61dd98c46a4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1350&q=80" alt="Pizza Carbonara" class="recipe-image">
+                    <div class="recipe-title-area">
+                        <h2 class="recipe-title">Pizza Carbonara</h2>
+                        <p class="recipe-subtitle">Inspirată din clasicul paste Carbonara</p>
+                    </div>
+                </div>
+                <div class="recipe-content">
+                    <div class="recipe-details">
+                        <div class="recipe-info">
+                            <div class="info-item">
+                                <i class="fas fa-clock info-icon"></i>
+                                <div class="info-label">Preparare</div>
+                                <div class="info-value">35 min</div>
+                            </div>
+                            <div class="info-item">
+                                <i class="fas fa-fire info-icon"></i>
+                                <div class="info-label">Coacere</div>
+                                <div class="info-value">15 min</div>
+                            </div>
+                            <div class="info-item">
+                                <i class="fas fa-users info-icon"></i>
+                                <div class="info-label">Porții</div>
+                                <div class="info-value">4</div>
+                            </div>
+                            <div class="info-item">
+                                <i class="fas fa-chart-pie info-icon"></i>
+                                <div class="info-label">Calorii</div>
+                                <div class="info-value">340 kcal</div>
+                            </div>
+                        </div>
+                        
+                        <h3>Ingrediente</h3>
+                        <ul class="ingredients-list">
+                            <li>1 bază de pizza</li>
+                            <li>100g smântână pentru gătit</li>
+                            <li>1 ou</li>
+                            <li>200g mozzarella rasă</li>
+                            <li>100g parmezan ras</li>
+                            <li>150g pancetta sau guanciale, tăiat cubulețe</li>
+                            <li>Piper negru proaspăt măcinat</li>
+                            <li>1 lingură ulei de măsline</li>
+                        </ul>
+                        
+                        <h3>Mod de preparare</h3>
+                        <ol class="instructions-list">
+                            <li>Prepară aluatul pentru pizza.</li>
+                            <li>Preîncălzește cuptorul la 250°C.</li>
+                            <li>Prăjește pancetta sau guanciale până devine crocant.</li>
+                            <li>Bate oul cu smântâna și jumătate din parmezan, adaugă piper negru.</li>
+                            <li>Întinde aluatul pe o tavă unsă cu ulei.</li>
+                            <li>În loc de sos de roșii, întinde un strat subțire din amestecul de ou și smântână.</li>
+                            <li>Presară mozzarella rasă.</li>
+                            <li>Adaugă pancetta sau guanciale.</li>
+                            <li>Presară restul de parmezan.</li>
+                            <li>Coace 12-15 minute până când marginile sunt aurii și brânza este topită.</li>
+                            <li>Adaugă piper proaspăt măcinat după coacere.</li>
+                        </ol>
+                    </div>
+                    <div class="recipe-footer">
+                        <button class="toggle-recipe-btn"><span class="btn-text">Ascunde rețeta</span> <i class="fas fa-chevron-up btn-icon"></i></button>
+                        <div class="social-share">
+                            <button class="share-btn"><i class="fab fa-facebook-f"></i></button>
+                            <button class="share-btn"><i class="fab fa-pinterest"></i></button>
+                            <button class="share-btn"><i class="fab fa-whatsapp"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-about">
+                    <div class="footer-logo">Delicii Italiene</div>
+                    <p>Suntem pasionați de arta culinară italiană și vrem să împărtășim cu voi cele mai delicioase rețete de pizza, preparate cu ingrediente autentice și multă dragoste.</p>
+                    <div class="social-media">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-pinterest"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+                
+                <div class="footer-links">
+                    <h3 class="footer-title">Link-uri Rapide</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">Acasă</a></li>
+                        <li><a href="#recipes">Rețete</a></li>
+                        <li><a href="#">Despre Noi</a></li>
+                        <li><a href="#">Blog Culinar</a></li>
+                        <li><a href="#">Contact</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-links">
+                    <h3 class="footer-title">Categorii Populare</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">Pizza Clasică</a></li>
+                        <li><a href="#">Pizza Vegetariană</a></li>
+                        <li><a href="#">Pizza cu Carne</a></li>
+                        <li><a href="#">Pizza Fără Gluten</a></li>
+                        <li><a href="#">Desert Pizza</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-newsletter">
+                    <h3 class="footer-title">Abonează-te</h3>
+                    <p>Primește cele mai noi rețete și sfaturi culinare direct în inbox-ul tău!</p>
+                    <form class="newsletter-form">
+                        <input type="email" placeholder="Adresa ta de email" required>
+                        <button type="submit"><i class="fas fa-paper-plane"></i></button>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="copyright">
+                <p>&copy; 2025 Delicii Italiene. Toate drepturile rezervate.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Funcționalitate pentru expandarea rețetelor
+        document.querySelectorAll('.recipe-header').forEach(header => {
+            header.addEventListener('click', () => {
+                const card = header.parentElement;
+                const content = card.querySelector('.recipe-content');
+                const btn = card.querySelector('.toggle-recipe-btn');
+                const btnText = btn.querySelector('.btn-text');
+                const btnIcon = btn.querySelector('.btn-icon');
+                
+                // Închide toate celelalte rețete
+                document.querySelectorAll('.recipe-card.expanded').forEach(openCard => {
+                    if (openCard !== card) {
+                        openCard.classList.remove('expanded');
+                        const openBtn = openCard.querySelector('.toggle-recipe-btn');
+                        openBtn.querySelector('.btn-text').textContent = 'Vezi rețeta';
+                        openBtn.querySelector('.btn-icon').className = 'fas fa-chevron-down btn-icon';
+                    }
+                });
+                
+                // Deschide/închide rețeta curentă
+                card.classList.toggle('expanded');
+                
+                if (card.classList.contains('expanded')) {
+                    btnText.textContent = 'Ascunde rețeta';
+                    btnIcon.className = 'fas fa-chevron-up btn-icon';
+                } else {
+                    btnText.textContent = 'Vezi rețeta';
+                    btnIcon.className = 'fas fa-chevron-down btn-icon';
+                }
+            });
+        });
+        
+        // Funcționalitate pentru butoanele Toggle Recipe
+        document.querySelectorAll('.toggle-recipe-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation(); // Previne propagarea evenimentului click
+                
+                const card = btn.closest('.recipe-card');
+                const btnText = btn.querySelector('.btn-text');
+                const btnIcon = btn.querySelector('.btn-icon');
+                
+                card.classList.toggle('expanded');
+                
+                if (card.classList.contains('expanded')) {
+                    btnText.textContent = 'Ascunde rețeta';
+                    btnIcon.className = 'fas fa-chevron-up btn-icon';
+                } else {
+                    btnText.textContent = 'Vezi rețeta';
+                    btnIcon.className = 'fas fa-chevron-down btn-icon';
+                }
+            });
+        });
+        
+        // Funcționalitate pentru taburile de categorii
+        document.querySelectorAll('.category-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                // Elimină clasa active de pe toate taburile
+                document.querySelectorAll('.category-tab').forEach(t => {
+                    t.classList.remove('active');
+                });
+                
+                // Adaugă clasa active pe tabul curent
+                tab.classList.add('active');
+                
+                // În mod normal, aici ar trebui să filtrăm rețetele în funcție de categorie
+                // Dar pentru această demonstrație, doar simulăm efectul
+                document.querySelectorAll('.recipe-card').forEach(card => {
+                    card.style.opacity = '0';
+                    setTimeout(() => {
+                        card.style.opacity = '1';
+                    }, 300);
+                });
+            });
+        });
+        
+        // Inițializare - Setează toate butoanele Toggle Recipe la "Vezi rețeta"
+        document.querySelectorAll('.toggle-recipe-btn').forEach(btn => {
+            const btnText = btn.querySelector('.btn-text');
+            const btnIcon = btn.querySelector('.btn-icon');
+            
+            btnText.textContent = 'Vezi rețeta';
+            btnIcon.className = 'fas fa-chevron-down btn-icon';
+        });
+        
+        // Funcționalitate pentru butoanele de share
+        document.querySelectorAll('.share-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation(); // Previne propagarea evenimentului click
+                
+                // Simulează comportamentul de share
+                btn.classList.add('active');
+                setTimeout(() => {
+                    btn.classList.remove('active');
+                }, 300);
+            });
+        });
+        
+        // Animație de scroll smooth la apăsarea butonului din header
+        document.querySelector('.browse-recipes-btn').addEventListener('click', (e) => {
+            e.preventDefault();
+            const target = document.querySelector('#recipes');
+            window.scrollTo({
+                top: target.offsetTop - 30,
+                behavior: 'smooth'
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,31 @@
+version: '3.8'
+services:
+  drupal:
+    image: drupal:10
+    ports:
+      - "8080:80"
+    volumes:
+      - ./drupal-data:/var/www/html
+    depends_on:
+      - mysql
+    environment:
+      - DRUPAL_DATABASE_HOST=mysql
+      - DRUPAL_DATABASE_PORT=3306
+      - DRUPAL_DATABASE_NAME=drupal
+      - DRUPAL_DATABASE_USER=drupal
+      - DRUPAL_DATABASE_PASSWORD=drupal
+  mysql:
+    image: mysql:8.0
+    environment:
+      - MYSQL_DATABASE=drupal
+      - MYSQL_USER=drupal
+      - MYSQL_PASSWORD=drupal
+      - MYSQL_ROOT_PASSWORD=rootpassword
+    volumes:
+      - mysql-data:/var/lib/mysql
+volumes:
+  drupal-modules:
+  drupal-profiles:
+  drupal-themes:
+  drupal-sites:
+  mysql-data:

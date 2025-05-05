@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: chat-frontend
+  labels:
+    app: chat-frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: chat-frontend
+  template:
+    metadata:
+      labels:
+        app: chat-frontend
+    spec:
+      containers:
+      - name: chat-frontend
+        image: chat-frontend:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 90
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 90
+          initialDelaySeconds: 10
+          periodSeconds: 5
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 90
+          initialDelaySeconds: 20
+          periodSeconds: 10
+        resources:
+          limits:
+            memory: "256Mi"
+            cpu: "300m"
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: chat-frontend-service
+spec:
+  selector:
+    app: chat-frontend
+  ports:
+  - port: 90
+    targetPort: 90
+  type: LoadBalancer 

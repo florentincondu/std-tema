@@ -1,0 +1,100 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-backend-proxy
+  labels:
+    app: nginx-backend-proxy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx-backend-proxy
+  template:
+    metadata:
+      labels:
+        app: nginx-backend-proxy
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.21-alpine
+        ports:
+        - containerPort: 88
+        volumeMounts:
+        - name: nginx-config
+          mountPath: /etc/nginx/conf.d/default.conf
+          subPath: nginx.conf
+        resources:
+          limits:
+            memory: "256Mi"
+            cpu: "300m"
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+        readinessProbe:
+          httpGet:
+            path: /api/messages
+            port: 88
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /api/messages
+            port: 88
+          initialDelaySeconds: 15
+          periodSeconds: 20
+      volumes:
+      - name: nginx-config
+        configMap:
+          name: nginx-backend-config
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-backend-config
+data:
+  nginx.conf: |
+    server {
+        listen 88;
+        server_name localhost;
+
+        # Proxy pentru API REST
+        location /api {
+            proxy_pass http://chat-backend-service:88/api;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+        }
+
+        # Proxy pentru WebSocket
+        location /chat {
+            proxy_pass http://chat-backend-service:88/chat;
+            proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection "upgrade";
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            proxy_read_timeout 86400;
+        }
+
+        # Health check
+        location = /health {
+            access_log off;
+            add_header Content-Type text/plain;
+            return 200 "healthy\n";
+        }
+    }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-backend-service
+spec:
+  selector:
+    app: nginx-backend-proxy
+  ports:
+  - port: 88
+    targetPort: 88
+  type: ClusterIP 

@@ -2,8 +2,10 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: chat-backend
+  labels:
+    app: chat-backend
 spec:
-  replicas: 1
+  replicas: 4
   selector:
     matchLabels:
       app: chat-backend
@@ -14,12 +16,36 @@ spec:
     spec:
       containers:
       - name: chat-backend
-        image: <your-registry>/chat-backend:latest
+        image: chat-backend:latest
+        imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 88
         env:
-        - name: SPRING_DATA_MONGODB_URI
-          value: mongodb://mongodb-service:27017/chatdb
+        - name: SPRING_DATA_MONGODB_HOST
+          value: "mongodb"
+        - name: SPRING_DATA_MONGODB_PORT
+          value: "27017"
+        - name: SPRING_DATA_MONGODB_DATABASE
+          value: "chatapp"
+        readinessProbe:
+          httpGet:
+            path: /api/messages
+            port: 88
+          initialDelaySeconds: 30
+          timeoutSeconds: 5
+        livenessProbe:
+          httpGet:
+            path: /api/messages
+            port: 88
+          initialDelaySeconds: 45
+          timeoutSeconds: 5
+        resources:
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+          requests:
+            memory: "256Mi"
+            cpu: "200m"
 ---
 apiVersion: v1
 kind: Service
@@ -29,6 +55,6 @@ spec:
   selector:
     app: chat-backend
   ports:
-  - protocol: TCP
-    port: 88
+  - port: 88
     targetPort: 88
+  type: ClusterIP
